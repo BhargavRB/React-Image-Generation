@@ -26,3 +26,5 @@ dist-ssr
 
 *.db
 *.db-*
+
+package-lock.json
