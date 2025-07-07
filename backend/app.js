@@ -2,10 +2,18 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
+import cors from 'cors';
 import { createUser, enforceAuth, login } from './auth.js';
+import { generateImage } from './image.js';
 
 const app = express();
 app.use(express.json());
+
+app.use(cors({
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "OPTIONS"],
+  credentials: true
+}));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -42,11 +50,11 @@ app.post('/login', async (req, res) => {
     }
 });
 
-app.post('gerenate-image', enforceAuth, async (req, res) => {
+app.post('/generate-image', enforceAuth, async (req, res) => {
     try {
         const { prompt, options } = req.body;
-        if (!prompt || prompt.trim().length < 5) {
-            return res.status(400).json({ message: 'Prompt (min 5 chars) required.' });
+        if (!prompt || prompt.trim().length < 3) {
+            return res.status(400).json({ message: 'Prompt (min 3 chars) required.' });
         }   
 
         const {image , format} = await generateImage(prompt, options)

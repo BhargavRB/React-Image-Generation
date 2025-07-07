@@ -1,5 +1,9 @@
 import { createContext, use, useState} from "react";
 
+const apiUrl = import.meta.env.VITE_BACKEND_HOST;
+
+console.log(`Using API URL: ${apiUrl}`); // Debugging line to check the API URL
+
 const AuthContext = createContext({
     token: null,
     signup: (email, password) => {},
@@ -17,11 +21,27 @@ export function useAuthContext() {
     return context;
 }
 
+function saveToken(token) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('tokenExpiration', new Date(Date().getTime() + 60 * 60 * 1000).toISOString());
+}
+
+const storedToken = localStorage.getItem('token');
+const tokenExpiration = localStorage.getItem('tokenExpiration');
+
+let initialToken = null;
+if (storedToken && new Date(tokenExpiration) > new Date()) {   
+    initialToken = storedToken;
+}else{
+    localStorage.removeItem('token');
+    localStorage.removeItem('tokenExpiration');
+}
+
 export function AuthContextProvider({ children }) {
-    const [token, setToken] = useState(null);
+    const [token, setToken] = useState(initialToken);
 
     async function signup(email, password) {
-        const response = await fetch('http://localhost:3000/signup', {
+        const response = await fetch(apiUrl +'/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -38,10 +58,11 @@ export function AuthContextProvider({ children }) {
             }
 
             setToken(resData.token);
+            saveToken(resData.token);
     }
     
     async function login(email, password) {
-        const response = await fetch('http://localhost:3000/login', {
+        const response = await fetch(apiUrl +'/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -58,9 +79,14 @@ export function AuthContextProvider({ children }) {
             }
 
             setToken(resData.token);
+            saveToken(resData.token);
     }
 
-    function logout() {}
+    function logout() {
+        setToken(null);
+        localStorage.removeItem('token');
+        localStorage.removeItem('tokenExpiration');
+    }
 
     const contextValue = {
         token,
