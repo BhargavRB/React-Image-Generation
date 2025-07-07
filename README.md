@@ -72,6 +72,17 @@ FE_HOST="http://localhost:5173"
 - Replace `your_replicate_api_token` with your Replicate API token.
 - Replace `FE_HOST` with your frontend host URL if different.
 
+### Database
+
+This project uses SQLite for user authentication data storage.
+
+No manual setup is required—SQLite will create a `app.db` file in the `backend/` folder automatically when you run the backend for the first time.
+
+If you want to inspect or manage the database, you can use any SQLite client (e.g., [DB Browser for SQLite](https://sqlitebrowser.org/)) to open `backend/app.db`.
+
+**Note:**  
+If you want to reset the database, simply delete the `app.db` file and restart the backend server.
+
 ## 4. Start the Backend Server
 
 ```bash
