@@ -2,8 +2,6 @@ import { createContext, use, useState} from "react";
 
 const apiUrl = import.meta.env.VITE_BACKEND_HOST;
 
-console.log(`Using API URL: ${apiUrl}`); // Debugging line to check the API URL
-
 const AuthContext = createContext({
     token: null,
     signup: (email, password) => {},
